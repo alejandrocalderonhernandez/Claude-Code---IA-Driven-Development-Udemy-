@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: jobboard_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: jobboard
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d jobboard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  pgdata:
+    driver: local
