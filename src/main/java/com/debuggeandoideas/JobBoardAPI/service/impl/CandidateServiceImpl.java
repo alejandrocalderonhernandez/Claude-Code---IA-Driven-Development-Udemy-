@@ -16,13 +16,11 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public CandidateResponse getCandidateById(Long id) {
-        // TO DO UNIT TEST
         return candidateClient.getCandidateById(id);
     }
 
     @Override
     public List<CandidateResponse> getAllCandidates() {
-        // TO DO UNIT TEST
         return candidateClient.getAllCandidates();
     }
 }

@@ -9,7 +9,6 @@ public class RestTemplateConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        // TO DO UNIT TEST
         return new RestTemplate();
     }
 }

@@ -26,7 +26,6 @@ public class CandidateClientImpl implements CandidateClient {
 
     @Override
     public CandidateResponse getCandidateById(Long id) {
-        // TO DO UNIT TEST
         try {
             return restTemplate.getForObject(baseUrl + "/users/{id}", CandidateResponse.class, id);
         } catch (HttpClientErrorException e) {
@@ -41,7 +40,6 @@ public class CandidateClientImpl implements CandidateClient {
 
     @Override
     public List<CandidateResponse> getAllCandidates() {
-        // TO DO UNIT TEST
         try {
             return restTemplate.exchange(
                     baseUrl + "/users",

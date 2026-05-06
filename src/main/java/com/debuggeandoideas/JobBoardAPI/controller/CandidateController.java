@@ -20,13 +20,11 @@ public class CandidateController {
 
     @GetMapping
     public ResponseEntity<List<CandidateResponse>> getAllCandidates() {
-        // TO DO UNIT TEST
         return ResponseEntity.ok(candidateService.getAllCandidates());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CandidateResponse> getCandidateById(@PathVariable Long id) {
-        // TO DO UNIT TEST
         return ResponseEntity.ok(candidateService.getCandidateById(id));
     }
 }
