@@ -9,8 +9,8 @@ Los candidatos viven en JSONPlaceholder — nunca se almacenan localmente.
 ## Documentos del proyecto
 **Lee solo el documento relevante a la tarea actual**, la cual se te indicará en cada prompt.
 Cada feature se incluirá en docs/tickets/{feature}, por ejemplo:
-docs/tickets/FEAT-001.md
-docs/tickets/FEAT-002.md
+docs/tickets/JBA-001.md
+docs/tickets/JBA-002.md
 Existen archivos específicos de la arquitectura del proyecto en docs/, los cuales
 te indicaré cuándo leer en caso de ser relevantes.
 
@@ -45,6 +45,6 @@ Toda regla de negocio vive en la capa de servicio. Nunca en controladores ni rep
 
 ## Prohibiciones
 - No agregar campos que no estén en el archivo docs/PRDJobBoardAPI.md
-- No crear endpoints fuera de los definidos en cada FEAT
+- No crear endpoints fuera de los definidos en cada JBA
 - No usar `ddl-auto: create` ni `update` — el schema es inmutable desde código
 - No ignorar RN-004 al crear postulaciones

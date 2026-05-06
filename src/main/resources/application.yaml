@@ -1,3 +1,7 @@
 spring:
   application:
     name: JobBoardAPI
+
+candidate:
+  service:
+    base-url: https://jsonplaceholder.typicode.com
