@@ -68,6 +68,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
     }
 
+    @ExceptionHandler(JobClosedException.class)
+    public ResponseEntity<ErrorResponse> handleJobClosed(
+            JobClosedException ex, HttpServletRequest request) {
+        var body = ErrorResponse.builder()
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .code("JOB_CLOSED")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+    @ExceptionHandler(DuplicateApplicationException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateApplication(
+            DuplicateApplicationException ex, HttpServletRequest request) {
+        var body = ErrorResponse.builder()
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .error(HttpStatus.UNPROCESSABLE_ENTITY.getReasonPhrase())
+                .code("DUPLICATE_APPLICATION")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
+    }
+
     @ExceptionHandler(CandidateServiceUnavailableException.class)
     public ResponseEntity<ErrorResponse> handleCandidateServiceUnavailable(
             CandidateServiceUnavailableException ex, HttpServletRequest request) {

@@ -1,5 +1,6 @@
 package com.debuggeandoideas.JobBoardAPI;
 
+import com.debuggeandoideas.JobBoardAPI.repository.ApplicationRepository;
 import com.debuggeandoideas.JobBoardAPI.repository.JobRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -19,6 +20,9 @@ class JobBoardApiApplicationTests {
 
 	@MockitoBean
 	private JobRepository jobRepository;
+
+	@MockitoBean
+	private ApplicationRepository applicationRepository;
 
 	@Test
 	void contextLoads() {
