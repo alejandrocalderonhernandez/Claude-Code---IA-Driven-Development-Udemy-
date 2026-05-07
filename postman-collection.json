@@ -71,6 +71,83 @@
       ]
     },
     {
+      "name": "Applications",
+      "description": "Postulaciones de candidatos a ofertas — JBA-003.",
+      "item": [
+        {
+          "name": "POST /applications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"candidate_id\": 1,\n  \"job_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applications",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications"]
+            },
+            "description": "Postula un candidato a una oferta. Valida en orden: candidato en JSONPlaceholder, oferta existente, oferta abierta, sin postulación previa."
+          },
+          "response": [
+            {
+              "name": "201 Created — postulación creada",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"candidate_id\": 1,\n  \"job_id\": 1,\n  \"status\": \"pending\",\n  \"applied_at\": \"2025-07-15T10:00:00Z\",\n  \"updated_at\": \"2025-07-15T10:00:00Z\"\n}"
+            },
+            {
+              "name": "404 Not Found — candidato no existe en JSONPlaceholder (RN-004)",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"CANDIDATE_NOT_FOUND\",\n  \"message\": \"No existe un candidato con id 99.\",\n  \"path\": \"/applications\"\n}"
+            },
+            {
+              "name": "404 Not Found — oferta no existe",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/applications\"\n}"
+            },
+            {
+              "name": "409 Conflict — oferta cerrada (RN-002)",
+              "status": "Conflict",
+              "code": 409,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 409,\n  \"error\": \"Conflict\",\n  \"code\": \"JOB_CLOSED\",\n  \"message\": \"La oferta con id 4 está cerrada y no acepta postulaciones.\",\n  \"path\": \"/applications\"\n}"
+            },
+            {
+              "name": "422 Unprocessable Entity — candidato ya postuló (RN-001)",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"DUPLICATE_APPLICATION\",\n  \"message\": \"El candidato 1 ya postuló a la oferta 1.\",\n  \"path\": \"/applications\"\n}"
+            },
+            {
+              "name": "422 Unprocessable Entity — campos inválidos",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/applications\",\n  \"errors\": [\n    {\n      \"field\": \"candidate_id\",\n      \"rejected_value\": null,\n      \"message\": \"El candidate_id es obligatorio.\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Jobs",
       "description": "CRUD de ofertas de trabajo — JBA-002.",
       "item": [

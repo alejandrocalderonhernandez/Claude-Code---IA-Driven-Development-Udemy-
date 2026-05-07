@@ -106,6 +106,7 @@ class ApplicationServiceImplTest {
         assertThat(result).isNotNull();
         assertThat(result.getStatus()).isEqualTo(ApplicationStatus.pending);
         assertThat(result.getCandidateId()).isEqualTo(1L);
+        verify(candidateClient).getCandidateById(1L);
         verify(applicationRepository).save(any(ApplicationEntity.class));
     }
 
