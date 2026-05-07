@@ -2,13 +2,16 @@ package com.debuggeandoideas.JobBoardAPI.service;
 
 import com.debuggeandoideas.JobBoardAPI.client.CandidateClient;
 import com.debuggeandoideas.JobBoardAPI.dto.request.ApplicationRequest;
+import com.debuggeandoideas.JobBoardAPI.dto.request.PatchApplicationStatusRequest;
 import com.debuggeandoideas.JobBoardAPI.dto.response.ApplicationResponse;
 import com.debuggeandoideas.JobBoardAPI.entity.ApplicationEntity;
 import com.debuggeandoideas.JobBoardAPI.entity.ApplicationStatus;
 import com.debuggeandoideas.JobBoardAPI.entity.JobEntity;
 import com.debuggeandoideas.JobBoardAPI.entity.JobStatus;
+import com.debuggeandoideas.JobBoardAPI.exception.ApplicationNotFoundException;
 import com.debuggeandoideas.JobBoardAPI.exception.CandidateNotFoundException;
 import com.debuggeandoideas.JobBoardAPI.exception.DuplicateApplicationException;
+import com.debuggeandoideas.JobBoardAPI.exception.InvalidStatusTransitionException;
 import com.debuggeandoideas.JobBoardAPI.exception.JobClosedException;
 import com.debuggeandoideas.JobBoardAPI.exception.JobNotFoundException;
 import com.debuggeandoideas.JobBoardAPI.mapper.ApplicationMapper;
@@ -206,6 +209,108 @@ class ApplicationServiceImplTest {
                 .isInstanceOf(DuplicateApplicationException.class);
 
         // Then — nunca se llama a save
+        verify(applicationRepository, never()).save(any());
+    }
+
+    // ─── updateStatus — happy path ───────────────────────────────────────────
+
+    @Test
+    void updateStatus_actualizaElStatusAAcceptedCuandoLaPostulacionEstaPending() {
+        // Given
+        var pendingEntity = buildEntity(10L);
+        var savedEntity = buildEntity(10L);
+        savedEntity.setStatus(ApplicationStatus.accepted);
+        var response = ApplicationResponse.builder()
+                .id(10L).candidateId(1L).jobId(2L).status(ApplicationStatus.accepted)
+                .appliedAt(OffsetDateTime.parse("2025-07-15T10:00:00Z"))
+                .updatedAt(OffsetDateTime.parse("2025-07-15T10:00:00Z"))
+                .build();
+        var request = new PatchApplicationStatusRequest("accepted");
+
+        when(applicationRepository.findById(10L)).thenReturn(Optional.of(pendingEntity));
+        when(applicationRepository.save(any(ApplicationEntity.class))).thenReturn(savedEntity);
+        when(applicationMapper.toResponse(savedEntity)).thenReturn(response);
+
+        // When
+        var result = applicationService.updateStatus(10L, request);
+
+        // Then
+        assertThat(result.getStatus()).isEqualTo(ApplicationStatus.accepted);
+        verify(applicationRepository).save(any(ApplicationEntity.class));
+    }
+
+    @Test
+    void updateStatus_actualizaElStatusARejectedCuandoLaPostulacionEstaPending() {
+        // Given
+        var pendingEntity = buildEntity(10L);
+        var savedEntity = buildEntity(10L);
+        savedEntity.setStatus(ApplicationStatus.rejected);
+        var response = ApplicationResponse.builder()
+                .id(10L).candidateId(1L).jobId(2L).status(ApplicationStatus.rejected)
+                .appliedAt(OffsetDateTime.parse("2025-07-15T10:00:00Z"))
+                .updatedAt(OffsetDateTime.parse("2025-07-15T10:00:00Z"))
+                .build();
+        var request = new PatchApplicationStatusRequest("rejected");
+
+        when(applicationRepository.findById(10L)).thenReturn(Optional.of(pendingEntity));
+        when(applicationRepository.save(any(ApplicationEntity.class))).thenReturn(savedEntity);
+        when(applicationMapper.toResponse(savedEntity)).thenReturn(response);
+
+        // When
+        var result = applicationService.updateStatus(10L, request);
+
+        // Then
+        assertThat(result.getStatus()).isEqualTo(ApplicationStatus.rejected);
+        verify(applicationRepository).save(any(ApplicationEntity.class));
+    }
+
+    // ─── updateStatus — postulación no existe ────────────────────────────────
+
+    @Test
+    void updateStatus_lanzaApplicationNotFoundExceptionCuandoLaPostulacionNoExiste() {
+        // Given
+        when(applicationRepository.findById(99L)).thenReturn(Optional.empty());
+        var request = new PatchApplicationStatusRequest("accepted");
+
+        // When / Then
+        assertThatThrownBy(() -> applicationService.updateStatus(99L, request))
+                .isInstanceOf(ApplicationNotFoundException.class)
+                .hasMessageContaining("99");
+
+        verify(applicationRepository, never()).save(any());
+    }
+
+    // ─── updateStatus — RN-003: estado ya es final ───────────────────────────
+
+    @Test
+    void updateStatus_lanzaInvalidStatusTransitionExceptionCuandoLaPostulacionYaEstaAccepted() {
+        // Given
+        var acceptedEntity = buildEntity(10L);
+        acceptedEntity.setStatus(ApplicationStatus.accepted);
+        when(applicationRepository.findById(10L)).thenReturn(Optional.of(acceptedEntity));
+        var request = new PatchApplicationStatusRequest("rejected");
+
+        // When / Then
+        assertThatThrownBy(() -> applicationService.updateStatus(10L, request))
+                .isInstanceOf(InvalidStatusTransitionException.class)
+                .hasMessageContaining("10");
+
+        verify(applicationRepository, never()).save(any());
+    }
+
+    @Test
+    void updateStatus_lanzaInvalidStatusTransitionExceptionCuandoLaPostulacionYaEstaRejected() {
+        // Given
+        var rejectedEntity = buildEntity(10L);
+        rejectedEntity.setStatus(ApplicationStatus.rejected);
+        when(applicationRepository.findById(10L)).thenReturn(Optional.of(rejectedEntity));
+        var request = new PatchApplicationStatusRequest("accepted");
+
+        // When / Then
+        assertThatThrownBy(() -> applicationService.updateStatus(10L, request))
+                .isInstanceOf(InvalidStatusTransitionException.class)
+                .hasMessageContaining("10");
+
         verify(applicationRepository, never()).save(any());
     }
 }

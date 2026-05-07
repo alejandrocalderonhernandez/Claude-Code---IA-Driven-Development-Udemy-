@@ -72,7 +72,7 @@
     },
     {
       "name": "Applications",
-      "description": "Postulaciones de candidatos a ofertas — JBA-003.",
+      "description": "Postulaciones de candidatos a ofertas — JBA-003 / JBA-004.",
       "item": [
         {
           "name": "POST /applications",
@@ -142,6 +142,63 @@
               "code": 422,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
               "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/applications\",\n  \"errors\": [\n    {\n      \"field\": \"candidate_id\",\n      \"rejected_value\": null,\n      \"message\": \"El candidate_id es obligatorio.\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "PATCH /applications/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applications/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "1", "status"]
+            },
+            "description": "Cambia el estado de una postulación de pending a accepted o rejected. Una vez en estado final no puede modificarse (RN-003, RN-005)."
+          },
+          "response": [
+            {
+              "name": "200 OK — postulación actualizada",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"candidate_id\": 1,\n  \"job_id\": 1,\n  \"status\": \"accepted\",\n  \"applied_at\": \"2025-07-15T10:00:00Z\",\n  \"updated_at\": \"2025-07-15T14:30:00Z\"\n}"
+            },
+            {
+              "name": "404 Not Found — postulación no existe",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"APPLICATION_NOT_FOUND\",\n  \"message\": \"La postulación con id 99 no existe.\",\n  \"path\": \"/applications/99/status\"\n}"
+            },
+            {
+              "name": "422 Unprocessable Entity — status no es accepted ni rejected (RN-005)",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/applications/1/status\",\n  \"errors\": [\n    {\n      \"field\": \"status\",\n      \"rejected_value\": \"pending\",\n      \"message\": \"El status debe ser accepted o rejected\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "422 Unprocessable Entity — postulación ya tiene estado final (RN-003)",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"INVALID_STATUS_TRANSITION\",\n  \"message\": \"La postulación con id 1 ya tiene un estado final y no puede modificarse.\",\n  \"path\": \"/applications/1/status\"\n}"
             }
           ]
         }

@@ -2,9 +2,11 @@ package com.debuggeandoideas.JobBoardAPI.controller;
 
 import com.debuggeandoideas.JobBoardAPI.dto.response.ApplicationResponse;
 import com.debuggeandoideas.JobBoardAPI.entity.ApplicationStatus;
+import com.debuggeandoideas.JobBoardAPI.exception.ApplicationNotFoundException;
 import com.debuggeandoideas.JobBoardAPI.exception.CandidateNotFoundException;
 import com.debuggeandoideas.JobBoardAPI.exception.DuplicateApplicationException;
 import com.debuggeandoideas.JobBoardAPI.exception.GlobalExceptionHandler;
+import com.debuggeandoideas.JobBoardAPI.exception.InvalidStatusTransitionException;
 import com.debuggeandoideas.JobBoardAPI.exception.JobClosedException;
 import com.debuggeandoideas.JobBoardAPI.exception.JobNotFoundException;
 import com.debuggeandoideas.JobBoardAPI.service.ApplicationService;
@@ -21,7 +23,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.OffsetDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,6 +59,22 @@ class ApplicationControllerTest {
               "candidate_id": 1,
               "job_id": -1
             }
+            """;
+
+    private static final String ACCEPTED_STATUS_JSON = """
+            {
+              "status": "accepted"
+            }
+            """;
+
+    private static final String PENDING_STATUS_JSON = """
+            {
+              "status": "pending"
+            }
+            """;
+
+    private static final String NULL_STATUS_JSON = """
+            {}
             """;
 
     @BeforeEach
@@ -169,5 +189,74 @@ class ApplicationControllerTest {
                         .content(VALID_REQUEST_JSON))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.code").value("DUPLICATE_APPLICATION"));
+    }
+
+    // ─── PATCH /applications/{id}/status ────────────────────────────────────
+
+    @Test
+    void updateStatus_retornaOkConLaPostulacionActualizadaCuandoElRequestEsValido() throws Exception {
+        // Given
+        var response = ApplicationResponse.builder()
+                .id(10L).candidateId(1L).jobId(2L).status(ApplicationStatus.accepted)
+                .appliedAt(OffsetDateTime.parse("2025-07-15T10:00:00Z"))
+                .updatedAt(OffsetDateTime.parse("2025-07-15T10:00:00Z"))
+                .build();
+        when(applicationService.updateStatus(eq(10L), any())).thenReturn(response);
+
+        // When / Then
+        mockMvc.perform(patch("/applications/10/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ACCEPTED_STATUS_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.status").value("accepted"));
+    }
+
+    @Test
+    void updateStatus_retornaNotFoundCuandoLaPostulacionNoExiste() throws Exception {
+        // Given
+        when(applicationService.updateStatus(eq(99L), any()))
+                .thenThrow(new ApplicationNotFoundException(99L));
+
+        // When / Then
+        mockMvc.perform(patch("/applications/99/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ACCEPTED_STATUS_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("APPLICATION_NOT_FOUND"));
+    }
+
+    @Test
+    void updateStatus_retornaUnprocessableEntityCuandoElStatusEsPending() throws Exception {
+        // When / Then
+        mockMvc.perform(patch("/applications/10/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(PENDING_STATUS_JSON))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+    }
+
+    @Test
+    void updateStatus_retornaUnprocessableEntityCuandoElStatusEsNulo() throws Exception {
+        // When / Then
+        mockMvc.perform(patch("/applications/10/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(NULL_STATUS_JSON))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+    }
+
+    @Test
+    void updateStatus_retornaUnprocessableEntityCuandoLaPostulacionYaTieneEstadoFinal() throws Exception {
+        // Given
+        when(applicationService.updateStatus(eq(10L), any()))
+                .thenThrow(new InvalidStatusTransitionException(10L));
+
+        // When / Then
+        mockMvc.perform(patch("/applications/10/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ACCEPTED_STATUS_JSON))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code").value("INVALID_STATUS_TRANSITION"));
     }
 }
