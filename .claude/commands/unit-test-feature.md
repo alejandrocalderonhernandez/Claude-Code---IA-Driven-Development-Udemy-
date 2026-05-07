@@ -9,9 +9,10 @@ Antes de escribir tests:
 1. Lee el ticket completo
 2. Busca todos los comentarios // TO DO UNIT TEST en el código del feature
 3. Cada comentario marca un método que requiere test — ese es tu contrato
+4. Usa la estrategia de Mocking que consideres mejor dependiendo el framework
 
 Al generar los tests:
-- Usa BDD con commentarios — Given / When / Then
+- Usa BDD con comentarios — Given / When / Then
 - Genera al menos un test por cada método marcado con // TO DO UNIT TEST
 - Cubre el happy path y todos los paths de error de cada método
 - Mockea siempre el servicio externo JSONPlaceholder — nunca lo llames real

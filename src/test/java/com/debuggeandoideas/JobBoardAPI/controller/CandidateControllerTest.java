@@ -3,6 +3,7 @@ package com.debuggeandoideas.JobBoardAPI.controller;
 import com.debuggeandoideas.JobBoardAPI.dto.response.CandidateResponse;
 import com.debuggeandoideas.JobBoardAPI.exception.CandidateNotFoundException;
 import com.debuggeandoideas.JobBoardAPI.exception.CandidateServiceUnavailableException;
+import com.debuggeandoideas.JobBoardAPI.exception.GlobalExceptionHandler;
 import com.debuggeandoideas.JobBoardAPI.service.CandidateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,9 @@ class CandidateControllerTest {
 
     @BeforeEach
     void configurarMockMvc() {
-        mockMvc = MockMvcBuilders.standaloneSetup(candidateController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(candidateController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
     }
 
     // ─── GET /candidates ─────────────────────────────────────────────────────

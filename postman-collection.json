@@ -1,0 +1,203 @@
+{
+  "info": {
+    "name": "Job Board API",
+    "_postman_id": "jba-001-collection",
+    "description": "Colección completa de endpoints para Job Board API. Incluye candidatos (proxy JSONPlaceholder) y ofertas de trabajo (JBA-002).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Candidates",
+      "description": "Proxy hacia JSONPlaceholder — solo lectura.",
+      "item": [
+        {
+          "name": "GET /candidates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidates",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidates"]
+            },
+            "description": "Lista todos los candidatos desde JSONPlaceholder."
+          },
+          "response": [
+            {
+              "name": "200 OK — lista de candidatos",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Leanne Graham\",\n    \"username\": \"Bret\",\n    \"email\": \"Sincere@april.biz\",\n    \"phone\": \"1-770-736-0988 x56442\",\n    \"website\": \"hildegard.org\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "GET /candidates/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidates/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidates", "1"]
+            },
+            "description": "Obtiene un candidato por ID desde JSONPlaceholder."
+          },
+          "response": [
+            {
+              "name": "200 OK — candidato encontrado",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Leanne Graham\",\n  \"username\": \"Bret\",\n  \"email\": \"Sincere@april.biz\",\n  \"phone\": \"1-770-736-0988 x56442\",\n  \"website\": \"hildegard.org\"\n}"
+            },
+            {
+              "name": "404 Not Found — candidato inexistente",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"CANDIDATE_NOT_FOUND\",\n  \"message\": \"No existe un candidato con id 99.\",\n  \"path\": \"/candidates/99\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "description": "CRUD de ofertas de trabajo — JBA-002.",
+      "item": [
+        {
+          "name": "POST /jobs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Backend Engineer\",\n  \"description\": \"Diseñar e implementar APIs REST con Java y PostgreSQL.\",\n  \"company\": \"Acme Corp\",\n  \"location\": \"Remoto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            },
+            "description": "Crea una nueva oferta de trabajo. El status se asigna como `open` automáticamente."
+          },
+          "response": [
+            {
+              "name": "201 Created — oferta creada",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Backend Engineer\",\n  \"description\": \"Diseñar e implementar APIs REST con Java y PostgreSQL.\",\n  \"company\": \"Acme Corp\",\n  \"location\": \"Remoto\",\n  \"status\": \"open\",\n  \"created_at\": \"2025-07-15T14:30:00Z\"\n}"
+            },
+            {
+              "name": "422 Unprocessable Entity — validación fallida",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/jobs\",\n  \"errors\": [\n    {\n      \"field\": \"title\",\n      \"rejected_value\": \"\",\n      \"message\": \"El título no puede estar vacío.\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            },
+            "description": "Lista todas las ofertas de trabajo."
+          },
+          "response": [
+            {
+              "name": "200 OK — lista de ofertas",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"Backend Engineer\",\n    \"description\": \"Diseñar e implementar APIs REST con Java y PostgreSQL.\",\n    \"company\": \"Acme Corp\",\n    \"location\": \"Remoto\",\n    \"status\": \"open\",\n    \"created_at\": \"2025-07-15T14:30:00Z\"\n  },\n  {\n    \"id\": 2,\n    \"title\": \"Frontend Developer\",\n    \"description\": \"Construir interfaces reactivas con React y TypeScript.\",\n    \"company\": \"Globex Inc\",\n    \"location\": \"Ciudad de México, MX\",\n    \"status\": \"open\",\n    \"created_at\": \"2025-07-14T09:00:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "GET /jobs/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "1"]
+            },
+            "description": "Obtiene una oferta de trabajo por su ID."
+          },
+          "response": [
+            {
+              "name": "200 OK — oferta encontrada",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Backend Engineer\",\n  \"description\": \"Diseñar e implementar APIs REST con Java y PostgreSQL.\",\n  \"company\": \"Acme Corp\",\n  \"location\": \"Remoto\",\n  \"status\": \"open\",\n  \"created_at\": \"2025-07-15T14:30:00Z\"\n}"
+            },
+            {
+              "name": "404 Not Found — oferta inexistente",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/jobs/99\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "PATCH /jobs/:id/close",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/1/close",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "1", "close"]
+            },
+            "description": "Cierra una oferta cambiando su status a `closed`. No requiere body."
+          },
+          "response": [
+            {
+              "name": "200 OK — oferta cerrada",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Backend Engineer\",\n  \"description\": \"Diseñar e implementar APIs REST con Java y PostgreSQL.\",\n  \"company\": \"Acme Corp\",\n  \"location\": \"Remoto\",\n  \"status\": \"closed\",\n  \"created_at\": \"2025-07-15T14:30:00Z\"\n}"
+            },
+            {
+              "name": "404 Not Found — oferta inexistente",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/jobs/99\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

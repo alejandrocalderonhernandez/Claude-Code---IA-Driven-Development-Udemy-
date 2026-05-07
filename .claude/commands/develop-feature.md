@@ -1,7 +1,7 @@
 Carga el agente en @agents/writer.md y adopta ese rol.
 
 Recibes dos argumentos en este orden:
-1. ID del ticket — ejemplo: JBA-003
+1. ID del ticket — ejemplo: JBA-003.md
 2. Archivo de arquitectura en docs/ — ejemplo: RESTSpec.md
 
 Implementa el feature: @docs/tickets/$ARGUMENTS[0].md
