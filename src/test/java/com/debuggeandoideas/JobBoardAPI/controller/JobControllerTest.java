@@ -1,5 +1,6 @@
 package com.debuggeandoideas.JobBoardAPI.controller;
 
+import com.debuggeandoideas.JobBoardAPI.dto.response.JobPageResponse;
 import com.debuggeandoideas.JobBoardAPI.dto.response.JobResponse;
 import com.debuggeandoideas.JobBoardAPI.entity.JobStatus;
 import com.debuggeandoideas.JobBoardAPI.exception.GlobalExceptionHandler;
@@ -124,28 +125,51 @@ class JobControllerTest {
     // ─── GET /jobs ───────────────────────────────────────────────────────────
 
     @Test
-    void getAllJobs_retornaOkConListaDeOfertas() throws Exception {
+    void searchJobs_retornaOkConPaginaDeOfertasCuandoNoHayFiltros() throws Exception {
         // Given
         var jobs = List.of(buildResponse(1L, JobStatus.open), buildResponse(2L, JobStatus.closed));
-        when(jobService.getAllJobs()).thenReturn(jobs);
+        var pageResponse = new JobPageResponse(jobs, 0, 20, 2L, 1);
+        when(jobService.searchJobs(any())).thenReturn(pageResponse);
 
         // When / Then
         mockMvc.perform(get("/jobs"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[1].status").value("closed"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[1].status").value("closed"))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.size").value(20))
+                .andExpect(jsonPath("$.total").value(2))
+                .andExpect(jsonPath("$.totalPages").value(1));
     }
 
     @Test
-    void getAllJobs_retornaOkConListaVaciaCuandoNoHayOfertas() throws Exception {
+    void searchJobs_retornaOkConContentVacioCuandoNoHayResultados() throws Exception {
         // Given
-        when(jobService.getAllJobs()).thenReturn(List.of());
+        var pageResponse = new JobPageResponse(List.of(), 0, 20, 0L, 0);
+        when(jobService.searchJobs(any())).thenReturn(pageResponse);
 
         // When / Then
         mockMvc.perform(get("/jobs"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.content.length()").value(0))
+                .andExpect(jsonPath("$.total").value(0));
+    }
+
+    @Test
+    void searchJobs_retornaOkCuandoSeFiltranOfertasPorTituloYStatus() throws Exception {
+        // Given
+        var jobs = List.of(buildResponse(1L, JobStatus.open));
+        var pageResponse = new JobPageResponse(jobs, 0, 20, 1L, 1);
+        when(jobService.searchJobs(any())).thenReturn(pageResponse);
+
+        // When / Then
+        mockMvc.perform(get("/jobs")
+                        .param("title", "backend")
+                        .param("status", "open"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].status").value("open"))
+                .andExpect(jsonPath("$.total").value(1));
     }
 
     // ─── GET /jobs/{id} ──────────────────────────────────────────────────────

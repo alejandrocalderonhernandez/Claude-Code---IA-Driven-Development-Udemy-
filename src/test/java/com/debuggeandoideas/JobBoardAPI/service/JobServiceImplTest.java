@@ -1,6 +1,7 @@
 package com.debuggeandoideas.JobBoardAPI.service;
 
 import com.debuggeandoideas.JobBoardAPI.dto.request.JobRequest;
+import com.debuggeandoideas.JobBoardAPI.dto.request.JobSearchCriteria;
 import com.debuggeandoideas.JobBoardAPI.dto.response.JobResponse;
 import com.debuggeandoideas.JobBoardAPI.entity.JobEntity;
 import com.debuggeandoideas.JobBoardAPI.entity.JobStatus;
@@ -13,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -188,5 +193,98 @@ class JobServiceImplTest {
         assertThatThrownBy(() -> jobService.closeJob(99L))
                 .isInstanceOf(JobNotFoundException.class)
                 .hasMessageContaining("99");
+    }
+
+    // ─── searchJobs ──────────────────────────────────────────────────────────
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void searchJobs_retornaTodasLasOfertasPaginadasCuandoNoHayFiltros() {
+        // Given
+        var entity = buildEntity(1L, JobStatus.open);
+        var response = buildResponse(1L, JobStatus.open);
+        var page = new PageImpl<>(List.of(entity), PageRequest.of(0, 20), 1L);
+
+        when(jobRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(jobMapper.toResponse(entity)).thenReturn(response);
+
+        var criteria = new JobSearchCriteria(null, null, null, 0, 20);
+
+        // When
+        var result = jobService.searchJobs(criteria);
+
+        // Then
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getPage()).isEqualTo(0);
+        assertThat(result.getSize()).isEqualTo(20);
+        assertThat(result.getTotal()).isEqualTo(1);
+        assertThat(result.getTotalPages()).isEqualTo(1);
+        verify(jobRepository).findAll(any(Specification.class), any(Pageable.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void searchJobs_retornaListaVaciaCuandoNoHayResultadosParaLosFiltros() {
+        // Given
+        var page = new PageImpl<JobEntity>(List.of(), PageRequest.of(0, 20), 0L);
+        when(jobRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+
+        var criteria = new JobSearchCriteria("inexistente", null, null, 0, 20);
+
+        // When
+        var result = jobService.searchJobs(criteria);
+
+        // Then
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getTotal()).isEqualTo(0);
+        assertThat(result.getTotalPages()).isEqualTo(0);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void searchJobs_retornaMetadataDePaginacionCorrecta() {
+        // Given
+        var e1 = buildEntity(1L, JobStatus.open);
+        var e2 = buildEntity(2L, JobStatus.open);
+        var r1 = buildResponse(1L, JobStatus.open);
+        var r2 = buildResponse(2L, JobStatus.open);
+        var page = new PageImpl<>(List.of(e1, e2), PageRequest.of(0, 2), 5L);
+
+        when(jobRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(jobMapper.toResponse(e1)).thenReturn(r1);
+        when(jobMapper.toResponse(e2)).thenReturn(r2);
+
+        var criteria = new JobSearchCriteria(null, null, null, 0, 2);
+
+        // When
+        var result = jobService.searchJobs(criteria);
+
+        // Then
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getPage()).isEqualTo(0);
+        assertThat(result.getSize()).isEqualTo(2);
+        assertThat(result.getTotal()).isEqualTo(5);
+        assertThat(result.getTotalPages()).isEqualTo(3);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void searchJobs_filtraPorStatusCuandoSeIndicaEnLosCriterios() {
+        // Given
+        var entity = buildEntity(1L, JobStatus.open);
+        var response = buildResponse(1L, JobStatus.open);
+        var page = new PageImpl<>(List.of(entity), PageRequest.of(0, 20), 1L);
+
+        when(jobRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(jobMapper.toResponse(entity)).thenReturn(response);
+
+        var criteria = new JobSearchCriteria(null, null, JobStatus.open, 0, 20);
+
+        // When
+        var result = jobService.searchJobs(criteria);
+
+        // Then
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getStatus()).isEqualTo(JobStatus.open);
     }
 }

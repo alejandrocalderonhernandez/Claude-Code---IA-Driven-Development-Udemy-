@@ -1,15 +1,16 @@
 package com.debuggeandoideas.JobBoardAPI.controller;
 
 import com.debuggeandoideas.JobBoardAPI.dto.request.JobRequest;
+import com.debuggeandoideas.JobBoardAPI.dto.request.JobSearchCriteria;
+import com.debuggeandoideas.JobBoardAPI.dto.response.JobPageResponse;
 import com.debuggeandoideas.JobBoardAPI.dto.response.JobResponse;
+import com.debuggeandoideas.JobBoardAPI.entity.JobStatus;
 import com.debuggeandoideas.JobBoardAPI.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/jobs")
@@ -25,8 +26,14 @@ public class JobController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobResponse>> getAllJobs() {
-        return ResponseEntity.ok(jobService.getAllJobs());
+    public ResponseEntity<JobPageResponse> searchJobs(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) JobStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        var criteria = new JobSearchCriteria(title, location, status, page, size);
+        return ResponseEntity.ok(jobService.searchJobs(criteria));
     }
 
     @GetMapping("/{id}")
