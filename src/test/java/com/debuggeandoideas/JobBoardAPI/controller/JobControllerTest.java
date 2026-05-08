@@ -110,7 +110,7 @@ class JobControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(EMPTY_TITLE_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.error_code").value("VALIDATION_ERROR"))
                 .andExpect(jsonPath("$.errors").isArray());
     }
 
@@ -121,7 +121,7 @@ class JobControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(NULL_DESCRIPTION_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+                .andExpect(jsonPath("$.error_code").value("VALIDATION_ERROR"));
     }
 
     // ─── GET /jobs ───────────────────────────────────────────────────────────
@@ -198,7 +198,7 @@ class JobControllerTest {
         // When / Then
         mockMvc.perform(get("/jobs/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("JOB_NOT_FOUND"))
+                .andExpect(jsonPath("$.error_code").value("JOB_NOT_FOUND"))
                 .andExpect(jsonPath("$.status").value(404));
     }
 
@@ -225,7 +225,7 @@ class JobControllerTest {
         // When / Then
         mockMvc.perform(patch("/jobs/99/close"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("JOB_NOT_FOUND"))
+                .andExpect(jsonPath("$.error_code").value("JOB_NOT_FOUND"))
                 .andExpect(jsonPath("$.status").value(404));
     }
 
@@ -257,6 +257,6 @@ class JobControllerTest {
         // When / Then
         mockMvc.perform(get("/jobs/99/report"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("JOB_NOT_FOUND"));
+                .andExpect(jsonPath("$.error_code").value("JOB_NOT_FOUND"));
     }
 }

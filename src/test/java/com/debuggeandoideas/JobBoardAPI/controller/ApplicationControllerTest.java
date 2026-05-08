@@ -121,7 +121,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(MISSING_CANDIDATE_ID_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.error_code").value("VALIDATION_ERROR"))
                 .andExpect(jsonPath("$.errors").isArray());
     }
 
@@ -132,7 +132,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(NEGATIVE_JOB_ID_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+                .andExpect(jsonPath("$.error_code").value("VALIDATION_ERROR"));
     }
 
     @Test
@@ -146,7 +146,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(VALID_REQUEST_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("CANDIDATE_NOT_FOUND"));
+                .andExpect(jsonPath("$.error_code").value("CANDIDATE_NOT_FOUND"));
     }
 
     @Test
@@ -160,7 +160,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(VALID_REQUEST_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("JOB_NOT_FOUND"));
+                .andExpect(jsonPath("$.error_code").value("JOB_NOT_FOUND"));
     }
 
     @Test
@@ -174,7 +174,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(VALID_REQUEST_JSON))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.code").value("JOB_CLOSED"));
+                .andExpect(jsonPath("$.error_code").value("JOB_CLOSED"));
     }
 
     @Test
@@ -188,7 +188,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(VALID_REQUEST_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("DUPLICATE_APPLICATION"));
+                .andExpect(jsonPath("$.error_code").value("DUPLICATE_APPLICATION"));
     }
 
     // ─── PATCH /applications/{id}/status ────────────────────────────────────
@@ -223,7 +223,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ACCEPTED_STATUS_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("APPLICATION_NOT_FOUND"));
+                .andExpect(jsonPath("$.error_code").value("APPLICATION_NOT_FOUND"));
     }
 
     @Test
@@ -233,7 +233,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(PENDING_STATUS_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+                .andExpect(jsonPath("$.error_code").value("VALIDATION_ERROR"));
     }
 
     @Test
@@ -243,7 +243,7 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(NULL_STATUS_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+                .andExpect(jsonPath("$.error_code").value("VALIDATION_ERROR"));
     }
 
     @Test
@@ -257,6 +257,6 @@ class ApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ACCEPTED_STATUS_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("INVALID_STATUS_TRANSITION"));
+                .andExpect(jsonPath("$.error_code").value("INVALID_STATUS_TRANSITION"));
     }
 }

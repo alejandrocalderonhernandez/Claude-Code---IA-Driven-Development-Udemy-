@@ -1,6 +1,7 @@
 package com.debuggeandoideas.JobBoardAPI.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class ErrorResponse {
     private OffsetDateTime timestamp;
     private int status;
     private String error;
+    @JsonProperty("error_code")
     private String code;
     private String message;
     private String path;
