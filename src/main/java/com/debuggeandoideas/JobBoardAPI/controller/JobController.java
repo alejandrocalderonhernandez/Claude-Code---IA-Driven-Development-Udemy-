@@ -3,6 +3,7 @@ package com.debuggeandoideas.JobBoardAPI.controller;
 import com.debuggeandoideas.JobBoardAPI.dto.request.JobRequest;
 import com.debuggeandoideas.JobBoardAPI.dto.request.JobSearchCriteria;
 import com.debuggeandoideas.JobBoardAPI.dto.response.JobPageResponse;
+import com.debuggeandoideas.JobBoardAPI.dto.response.JobReportResponse;
 import com.debuggeandoideas.JobBoardAPI.dto.response.JobResponse;
 import com.debuggeandoideas.JobBoardAPI.entity.JobStatus;
 import com.debuggeandoideas.JobBoardAPI.service.JobService;
@@ -46,5 +47,11 @@ public class JobController {
     public ResponseEntity<JobResponse> closeJob(
             @PathVariable Long id) {
         return ResponseEntity.ok(jobService.closeJob(id));
+    }
+
+    @GetMapping("/{id}/report")
+    public ResponseEntity<JobReportResponse> getJobReport(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(jobService.getJobReport(id));
     }
 }

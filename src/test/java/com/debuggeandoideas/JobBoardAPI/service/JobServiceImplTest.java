@@ -3,10 +3,12 @@ package com.debuggeandoideas.JobBoardAPI.service;
 import com.debuggeandoideas.JobBoardAPI.dto.request.JobRequest;
 import com.debuggeandoideas.JobBoardAPI.dto.request.JobSearchCriteria;
 import com.debuggeandoideas.JobBoardAPI.dto.response.JobResponse;
+import com.debuggeandoideas.JobBoardAPI.entity.ApplicationStatus;
 import com.debuggeandoideas.JobBoardAPI.entity.JobEntity;
 import com.debuggeandoideas.JobBoardAPI.entity.JobStatus;
 import com.debuggeandoideas.JobBoardAPI.exception.JobNotFoundException;
 import com.debuggeandoideas.JobBoardAPI.mapper.JobMapper;
+import com.debuggeandoideas.JobBoardAPI.repository.ApplicationRepository;
 import com.debuggeandoideas.JobBoardAPI.repository.JobRepository;
 import com.debuggeandoideas.JobBoardAPI.service.impl.JobServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -32,11 +34,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class JobServiceImplTest {
 
-    @Mock
-    private JobRepository jobRepository;
-
-    @Mock
-    private JobMapper jobMapper;
+    @Mock private JobRepository jobRepository;
+    @Mock private ApplicationRepository applicationRepository;
+    @Mock private JobMapper jobMapper;
 
     @InjectMocks
     private JobServiceImpl jobService;
@@ -265,6 +265,62 @@ class JobServiceImplTest {
         assertThat(result.getSize()).isEqualTo(2);
         assertThat(result.getTotal()).isEqualTo(5);
         assertThat(result.getTotalPages()).isEqualTo(3);
+    }
+
+    // ─── getJobReport ─────────────────────────────────────────────────────────
+
+    @Test
+    void getJobReport_retornaReporteConTotalesCorrectosCuandoHayPostulaciones() {
+        // Given
+        var job = buildEntity(1L, JobStatus.open);
+        var rows = List.of(
+                new Object[]{ApplicationStatus.pending, 2L},
+                new Object[]{ApplicationStatus.accepted, 1L},
+                new Object[]{ApplicationStatus.rejected, 2L}
+        );
+
+        when(jobRepository.findById(1L)).thenReturn(Optional.of(job));
+        when(applicationRepository.countByJobIdGroupByStatus(1L)).thenReturn(rows);
+
+        // When
+        var result = jobService.getJobReport(1L);
+
+        // Then
+        assertThat(result.getJobId()).isEqualTo(1L);
+        assertThat(result.getTitle()).isEqualTo("Backend Engineer");
+        assertThat(result.getTotalApplications()).isEqualTo(5L);
+        assertThat(result.getByStatus()).containsEntry("pending", 2L);
+        assertThat(result.getByStatus()).containsEntry("accepted", 1L);
+        assertThat(result.getByStatus()).containsEntry("rejected", 2L);
+    }
+
+    @Test
+    void getJobReport_retornaReporteConTodosLosStatusEnCeroCuandoNoHayPostulaciones() {
+        // Given
+        var job = buildEntity(1L, JobStatus.open);
+
+        when(jobRepository.findById(1L)).thenReturn(Optional.of(job));
+        when(applicationRepository.countByJobIdGroupByStatus(1L)).thenReturn(List.of());
+
+        // When
+        var result = jobService.getJobReport(1L);
+
+        // Then
+        assertThat(result.getTotalApplications()).isEqualTo(0L);
+        assertThat(result.getByStatus()).containsEntry("pending", 0L);
+        assertThat(result.getByStatus()).containsEntry("accepted", 0L);
+        assertThat(result.getByStatus()).containsEntry("rejected", 0L);
+    }
+
+    @Test
+    void getJobReport_lanzaJobNotFoundExceptionCuandoLaOfertaNoExiste() {
+        // Given
+        when(jobRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // When / Then
+        assertThatThrownBy(() -> jobService.getJobReport(99L))
+                .isInstanceOf(JobNotFoundException.class)
+                .hasMessageContaining("99");
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.debuggeandoideas.JobBoardAPI.controller;
 
 import com.debuggeandoideas.JobBoardAPI.dto.response.JobPageResponse;
+import com.debuggeandoideas.JobBoardAPI.dto.response.JobReportResponse;
 import com.debuggeandoideas.JobBoardAPI.dto.response.JobResponse;
 import com.debuggeandoideas.JobBoardAPI.entity.JobStatus;
 import com.debuggeandoideas.JobBoardAPI.exception.GlobalExceptionHandler;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -225,5 +227,36 @@ class JobControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("JOB_NOT_FOUND"))
                 .andExpect(jsonPath("$.status").value(404));
+    }
+
+    // ─── GET /jobs/{id}/report ───────────────────────────────────────────────
+
+    @Test
+    void getJobReport_retornaOkConElReporteCompleto() throws Exception {
+        // Given
+        var byStatus = Map.of("pending", 2L, "accepted", 1L, "rejected", 2L);
+        var report = new JobReportResponse(1L, "Backend Engineer", 5L, byStatus);
+        when(jobService.getJobReport(1L)).thenReturn(report);
+
+        // When / Then
+        mockMvc.perform(get("/jobs/1/report"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.job_id").value(1))
+                .andExpect(jsonPath("$.title").value("Backend Engineer"))
+                .andExpect(jsonPath("$.total_applications").value(5))
+                .andExpect(jsonPath("$.by_status.pending").value(2))
+                .andExpect(jsonPath("$.by_status.accepted").value(1))
+                .andExpect(jsonPath("$.by_status.rejected").value(2));
+    }
+
+    @Test
+    void getJobReport_retornaNotFoundCuandoLaOfertaNoExiste() throws Exception {
+        // Given
+        when(jobService.getJobReport(99L)).thenThrow(new JobNotFoundException(99L));
+
+        // When / Then
+        mockMvc.perform(get("/jobs/99/report"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("JOB_NOT_FOUND"));
     }
 }
