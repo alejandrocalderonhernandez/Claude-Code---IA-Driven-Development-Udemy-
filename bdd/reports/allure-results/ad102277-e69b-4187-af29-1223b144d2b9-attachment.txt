@@ -1,0 +1,6 @@
+{
+  "title": "Senior Backend Developer",
+  "description": "Looking for a developer with Java 25 and Spring Boot 4 experience.",
+  "company": "TechCorp S.A.",
+  "location": "Mexico City"
+}

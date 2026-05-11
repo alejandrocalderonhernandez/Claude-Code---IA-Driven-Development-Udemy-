@@ -1,0 +1,6 @@
+{
+  "title": "",
+  "description": "Valid description.",
+  "company": "DataCo",
+  "location": "Monterrey"
+}
