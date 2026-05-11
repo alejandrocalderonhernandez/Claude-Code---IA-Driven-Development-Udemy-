@@ -2,7 +2,7 @@
   "info": {
     "name": "Job Board API",
     "_postman_id": "jba-001-collection",
-    "description": "Colección completa de endpoints para Job Board API. Incluye candidatos (proxy JSONPlaceholder) y ofertas de trabajo (JBA-002).",
+    "description": "Colección completa — JBA-001 al JBA-007. Candidatos (proxy JSONPlaceholder), ofertas, postulaciones y reporte.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -15,7 +15,7 @@
   "item": [
     {
       "name": "Candidates",
-      "description": "Proxy hacia JSONPlaceholder — solo lectura.",
+      "description": "Proxy hacia JSONPlaceholder — solo lectura. JBA-001.",
       "item": [
         {
           "name": "GET /candidates",
@@ -64,7 +64,7 @@
               "status": "Not Found",
               "code": 404,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"CANDIDATE_NOT_FOUND\",\n  \"message\": \"No existe un candidato con id 99.\",\n  \"path\": \"/candidates/99\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"error_code\": \"CANDIDATE_NOT_FOUND\",\n  \"message\": \"No existe un candidato con id 99.\",\n  \"path\": \"/candidates/99\"\n}"
             }
           ]
         }
@@ -78,20 +78,11 @@
           "name": "POST /applications",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"candidate_id\": 1,\n  \"job_id\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{baseUrl}}/applications",
@@ -113,35 +104,35 @@
               "status": "Not Found",
               "code": 404,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"CANDIDATE_NOT_FOUND\",\n  \"message\": \"No existe un candidato con id 99.\",\n  \"path\": \"/applications\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"error_code\": \"CANDIDATE_NOT_FOUND\",\n  \"message\": \"No existe un candidato con id 99.\",\n  \"path\": \"/applications\"\n}"
             },
             {
               "name": "404 Not Found — oferta no existe",
               "status": "Not Found",
               "code": 404,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/applications\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"error_code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/applications\"\n}"
             },
             {
               "name": "409 Conflict — oferta cerrada (RN-002)",
               "status": "Conflict",
               "code": 409,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 409,\n  \"error\": \"Conflict\",\n  \"code\": \"JOB_CLOSED\",\n  \"message\": \"La oferta con id 4 está cerrada y no acepta postulaciones.\",\n  \"path\": \"/applications\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 409,\n  \"error\": \"Conflict\",\n  \"error_code\": \"JOB_CLOSED\",\n  \"message\": \"La oferta con id 4 está cerrada y no acepta postulaciones.\",\n  \"path\": \"/applications\"\n}"
             },
             {
               "name": "422 Unprocessable Entity — candidato ya postuló (RN-001)",
               "status": "Unprocessable Entity",
               "code": 422,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"DUPLICATE_APPLICATION\",\n  \"message\": \"El candidato 1 ya postuló a la oferta 1.\",\n  \"path\": \"/applications\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"error_code\": \"DUPLICATE_APPLICATION\",\n  \"message\": \"El candidato 1 ya postuló a la oferta 1.\",\n  \"path\": \"/applications\"\n}"
             },
             {
               "name": "422 Unprocessable Entity — campos inválidos",
               "status": "Unprocessable Entity",
               "code": 422,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/applications\",\n  \"errors\": [\n    {\n      \"field\": \"candidate_id\",\n      \"rejected_value\": null,\n      \"message\": \"El candidate_id es obligatorio.\"\n    }\n  ]\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"error_code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/applications\",\n  \"errors\": [\n    {\n      \"field\": \"candidate_id\",\n      \"rejected_value\": null,\n      \"message\": \"El candidate_id es obligatorio.\"\n    }\n  ]\n}"
             }
           ]
         },
@@ -149,20 +140,11 @@
           "name": "PATCH /applications/:id/status",
           "request": {
             "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"accepted\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{baseUrl}}/applications/1/status",
@@ -184,21 +166,21 @@
               "status": "Not Found",
               "code": 404,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"APPLICATION_NOT_FOUND\",\n  \"message\": \"La postulación con id 99 no existe.\",\n  \"path\": \"/applications/99/status\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"error_code\": \"APPLICATION_NOT_FOUND\",\n  \"message\": \"La postulación con id 99 no existe.\",\n  \"path\": \"/applications/99/status\"\n}"
             },
             {
               "name": "422 Unprocessable Entity — status no es accepted ni rejected (RN-005)",
               "status": "Unprocessable Entity",
               "code": 422,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/applications/1/status\",\n  \"errors\": [\n    {\n      \"field\": \"status\",\n      \"rejected_value\": \"pending\",\n      \"message\": \"El status debe ser accepted o rejected\"\n    }\n  ]\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"error_code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/applications/1/status\",\n  \"errors\": [\n    {\n      \"field\": \"status\",\n      \"rejected_value\": \"pending\",\n      \"message\": \"El status debe ser accepted o rejected\"\n    }\n  ]\n}"
             },
             {
               "name": "422 Unprocessable Entity — postulación ya tiene estado final (RN-003)",
               "status": "Unprocessable Entity",
               "code": 422,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"INVALID_STATUS_TRANSITION\",\n  \"message\": \"La postulación con id 1 ya tiene un estado final y no puede modificarse.\",\n  \"path\": \"/applications/1/status\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"error_code\": \"INVALID_STATUS_TRANSITION\",\n  \"message\": \"La postulación con id 1 ya tiene un estado final y no puede modificarse.\",\n  \"path\": \"/applications/1/status\"\n}"
             }
           ]
         }
@@ -206,26 +188,17 @@
     },
     {
       "name": "Jobs",
-      "description": "CRUD de ofertas de trabajo — JBA-002.",
+      "description": "CRUD de ofertas, búsqueda y reporte — JBA-002 / JBA-005 / JBA-006.",
       "item": [
         {
           "name": "POST /jobs",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"Backend Engineer\",\n  \"description\": \"Diseñar e implementar APIs REST con Java y PostgreSQL.\",\n  \"company\": \"Acme Corp\",\n  \"location\": \"Remoto\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{baseUrl}}/jobs",
@@ -247,29 +220,36 @@
               "status": "Unprocessable Entity",
               "code": 422,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/jobs\",\n  \"errors\": [\n    {\n      \"field\": \"title\",\n      \"rejected_value\": \"\",\n      \"message\": \"El título no puede estar vacío.\"\n    }\n  ]\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:36:00Z\",\n  \"status\": 422,\n  \"error\": \"Unprocessable Entity\",\n  \"error_code\": \"VALIDATION_ERROR\",\n  \"message\": \"La petición contiene campos inválidos.\",\n  \"path\": \"/jobs\",\n  \"errors\": [\n    {\n      \"field\": \"title\",\n      \"rejected_value\": \"\",\n      \"message\": \"El título no puede estar vacío.\"\n    }\n  ]\n}"
             }
           ]
         },
         {
-          "name": "GET /jobs",
+          "name": "GET /jobs (con filtros y paginación)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/jobs",
+              "raw": "{{baseUrl}}/jobs?title=backend&location=remoto&status=open&page=0&size=20",
               "host": ["{{baseUrl}}"],
-              "path": ["jobs"]
+              "path": ["jobs"],
+              "query": [
+                { "key": "title",    "value": "backend", "description": "Filtro parcial case-insensitive (opcional)" },
+                { "key": "location", "value": "remoto",  "description": "Filtro parcial case-insensitive (opcional)" },
+                { "key": "status",   "value": "open",    "description": "open | closed (opcional)" },
+                { "key": "page",     "value": "0",       "description": "Página (base 0, default 0)" },
+                { "key": "size",     "value": "20",      "description": "Tamaño de página (default 20)" }
+              ]
             },
-            "description": "Lista todas las ofertas de trabajo."
+            "description": "Busca ofertas con filtros opcionales y paginación. Todos los params son opcionales — sin filtros devuelve todas las ofertas paginadas."
           },
           "response": [
             {
-              "name": "200 OK — lista de ofertas",
+              "name": "200 OK — página de ofertas con filtros",
               "status": "OK",
               "code": 200,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"Backend Engineer\",\n    \"description\": \"Diseñar e implementar APIs REST con Java y PostgreSQL.\",\n    \"company\": \"Acme Corp\",\n    \"location\": \"Remoto\",\n    \"status\": \"open\",\n    \"created_at\": \"2025-07-15T14:30:00Z\"\n  },\n  {\n    \"id\": 2,\n    \"title\": \"Frontend Developer\",\n    \"description\": \"Construir interfaces reactivas con React y TypeScript.\",\n    \"company\": \"Globex Inc\",\n    \"location\": \"Ciudad de México, MX\",\n    \"status\": \"open\",\n    \"created_at\": \"2025-07-14T09:00:00Z\"\n  }\n]"
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"title\": \"Backend Engineer\",\n      \"description\": \"Diseñar e implementar APIs REST con Java y PostgreSQL.\",\n      \"company\": \"Acme Corp\",\n      \"location\": \"Remoto\",\n      \"status\": \"open\",\n      \"created_at\": \"2025-07-15T14:30:00Z\"\n    }\n  ],\n  \"page\": 0,\n  \"size\": 20,\n  \"total\": 1,\n  \"totalPages\": 1\n}"
             }
           ]
         },
@@ -298,7 +278,7 @@
               "status": "Not Found",
               "code": 404,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/jobs/99\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"error_code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/jobs/99\"\n}"
             }
           ]
         },
@@ -327,7 +307,43 @@
               "status": "Not Found",
               "code": 404,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/jobs/99\"\n}"
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"error_code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/jobs/99\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /jobs/:id/report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/1/report",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "1", "report"]
+            },
+            "description": "Devuelve el reporte de postulaciones de una oferta: total y desglose por estado. Siempre incluye los 3 estados aunque tengan 0."
+          },
+          "response": [
+            {
+              "name": "200 OK — reporte de la oferta",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"job_id\": 1,\n  \"title\": \"Backend Engineer\",\n  \"total_applications\": 5,\n  \"by_status\": {\n    \"pending\": 2,\n    \"accepted\": 1,\n    \"rejected\": 2\n  }\n}"
+            },
+            {
+              "name": "200 OK — oferta sin postulaciones",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"job_id\": 1,\n  \"title\": \"Backend Engineer\",\n  \"total_applications\": 0,\n  \"by_status\": {\n    \"pending\": 0,\n    \"accepted\": 0,\n    \"rejected\": 0\n  }\n}"
+            },
+            {
+              "name": "404 Not Found — oferta inexistente",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"timestamp\": \"2025-07-15T14:35:00Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"error_code\": \"JOB_NOT_FOUND\",\n  \"message\": \"No existe una oferta con id 99.\",\n  \"path\": \"/jobs/99/report\"\n}"
             }
           ]
         }

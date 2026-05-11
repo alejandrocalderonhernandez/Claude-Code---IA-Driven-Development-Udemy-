@@ -1,11 +1,6 @@
 <div class="cover"></div>
 
 # Manifiesto de Arquitectura — Búsqueda dinámica con Criteria Builder
-**Versión:** 1.0
-**Fecha:** Mayo 2026
-**Feature:** JBA-005 — Búsqueda y filtros de ofertas con paginación
-**Stack:** Java 25 · Spring Boot 4 · Spring Data JPA · Criteria API
-
 ---
 
 ## 🎯 Objetivo
