@@ -1,0 +1,4 @@
+{
+  "candidate_id": 9999,
+  "job_id": {open_job_id}
+}
